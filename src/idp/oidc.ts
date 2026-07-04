@@ -14,7 +14,12 @@ export function oidc(opts: {
 
   return {
     resolve(fetchImpl: FetchLike = fetch): Promise<IdpConfig> {
-      if (!cached) cached = discover(opts, fetchImpl);
+      if (!cached) {
+        cached = discover(opts, fetchImpl).catch((err) => {
+          cached = undefined;
+          throw err;
+        });
+      }
       return cached;
     },
   };
