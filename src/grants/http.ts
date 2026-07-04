@@ -19,8 +19,11 @@ export async function postForm(
     const oauthError = typeof json.error === "string" ? json.error : undefined;
     throw new GrantError(`Token request failed (${res.status})`, res.status, oauthError);
   }
+  if (typeof json.access_token !== "string" || json.access_token.length === 0) {
+    throw new GrantError(`Token endpoint returned no access_token (${res.status})`, res.status);
+  }
   return {
-    accessToken: String(json.access_token ?? ""),
+    accessToken: json.access_token,
     expiresIn: typeof json.expires_in === "number" ? json.expires_in : undefined,
     issuedTokenType: typeof json.issued_token_type === "string" ? json.issued_token_type : undefined,
     scope: typeof json.scope === "string" ? json.scope : undefined,

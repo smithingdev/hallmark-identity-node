@@ -33,4 +33,28 @@ describe("clientCredentials", () => {
       oauthError: "invalid_client",
     });
   });
+
+  it("missing access_token on a 200 throws GrantError", async () => {
+    const f = vi.fn(async () => new Response(JSON.stringify({ token_type: "Bearer" }), { status: 200 }));
+    await expect(clientCredentials(cfg, {}, f as never)).rejects.toMatchObject({
+      constructor: GrantError,
+    });
+  });
+
+  it("client_secret omitted when absent", async () => {
+    const cfgNoSecret: IdpConfig = {
+      tokenEndpoint: "https://idp.example/token",
+      clientId: "agent",
+      supportsTokenExchange: true,
+    };
+    const f = vi.fn(async (_url: string | URL, init?: RequestInit) => {
+      const body = new URLSearchParams(init!.body as string);
+      expect(body.has("client_secret")).toBe(false);
+      expect(body.has("audience")).toBe(false);
+      expect(body.has("scope")).toBe(false);
+      return new Response(JSON.stringify({ access_token: "AT", expires_in: 300 }), { status: 200 });
+    });
+    const result = await clientCredentials(cfgNoSecret, {}, f as never);
+    expect(result).toEqual({ accessToken: "AT", expiresIn: 300, scope: undefined, tokenType: undefined, issuedTokenType: undefined });
+  });
 });
