@@ -26,9 +26,9 @@ export function createResolver(deps: ResolverDeps) {
     const scope = req.scope ?? "";
     if (req.onBehalfOf) {
       const subHash = createHash("sha256").update(req.onBehalfOf.subjectToken).digest("hex").slice(0, 16);
-      return `te:${req.onBehalfOf.subjectTokenType}:${subHash}:${audience}:${scope}`;
+      return JSON.stringify(["te", req.onBehalfOf.subjectTokenType, subHash, audience, scope]);
     }
-    return `cc:${audience}:${scope}`;
+    return JSON.stringify(["cc", audience, scope]);
   }
 
   async function grant(req: ResolveRequest): Promise<GrantResult> {

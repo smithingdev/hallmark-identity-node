@@ -54,4 +54,20 @@ describe("createIdentity", () => {
     await identity.agent().token({ audience: "b" });
     expect(f).toHaveBeenCalledTimes(2);
   });
+
+  it("distinguishes cache entries by scopes", async () => {
+    const f = vi.fn(async () => tokenResponse("AT"));
+    const identity = createIdentity({ idp, fetch: f as never });
+    await identity.agent().token({ audience: "a", scopes: ["read"] });
+    await identity.agent().token({ audience: "a", scopes: ["write"] });
+    expect(f).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not collide cache keys between different (audience, scope) pairs that share characters", async () => {
+    const f = vi.fn(async () => tokenResponse("AT"));
+    const identity = createIdentity({ idp, fetch: f as never });
+    await identity.agent().token({ audience: "https://api.example.com", scopes: ["user:email"] });
+    await identity.agent().token({ audience: "https://api.example.com:user", scopes: ["email"] });
+    expect(f).toHaveBeenCalledTimes(2);
+  });
 });
