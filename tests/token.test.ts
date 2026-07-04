@@ -24,6 +24,23 @@ describe("parseToken", () => {
     expect(t.sub).toBeUndefined();
     expect(t.exp).toBeUndefined();
   });
+
+  it("handles malformed payload gracefully by returning only raw", () => {
+    const t = parseToken("aaa.@@@not-json@@@.bbb");
+    expect(t.raw).toBe("aaa.@@@not-json@@@.bbb");
+    expect(t.sub).toBeUndefined();
+    expect(t.exp).toBeUndefined();
+  });
+
+  it("rejects non-string act.sub", () => {
+    const t = parseToken(jwt({ act: { sub: 123 } }));
+    expect(t.act?.sub).toBeUndefined();
+  });
+
+  it("rejects non-string/non-string-array aud", () => {
+    const t = parseToken(jwt({ aud: 42 }));
+    expect(t.aud).toBeUndefined();
+  });
 });
 
 describe("isExpired / willExpireWithin", () => {

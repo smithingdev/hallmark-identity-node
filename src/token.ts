@@ -16,8 +16,8 @@ export function parseToken(raw: string): Token {
     return {
       raw,
       sub: typeof claims.sub === "string" ? claims.sub : undefined,
-      act: isActClaim(claims.act) ? { sub: claims.act.sub } : undefined,
-      aud: claims.aud as string | string[] | undefined,
+      act: isActClaim(claims.act) ? { sub: typeof claims.act.sub === "string" ? claims.act.sub : undefined } : undefined,
+      aud: isAudClaim(claims.aud) ? claims.aud : undefined,
       scope: typeof claims.scope === "string" ? claims.scope : undefined,
       exp: typeof claims.exp === "number" ? claims.exp : undefined,
     };
@@ -27,7 +27,13 @@ export function parseToken(raw: string): Token {
 }
 
 function isActClaim(v: unknown): v is { sub?: string } {
-  return typeof v === "object" && v !== null;
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+
+function isAudClaim(v: unknown): v is string | string[] {
+  if (typeof v === "string") return true;
+  if (Array.isArray(v) && v.every(el => typeof el === "string")) return true;
+  return false;
 }
 
 export function isExpired(token: Token, skewSeconds = 30, nowMs = Date.now()): boolean {
