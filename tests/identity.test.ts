@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { createIdentity } from "../src/identity.js";
 import type { IdpProvider } from "../src/idp/types.js";
+import { memoryStore } from "../src/store/memory.js";
 
 const idp: IdpProvider = {
   async resolve() {
@@ -10,6 +11,11 @@ const idp: IdpProvider = {
 
 function tokenResponse(access: string, expiresIn = 300) {
   return new Response(JSON.stringify({ access_token: access, expires_in: expiresIn }), { status: 200 });
+}
+
+function jwt(payload: Record<string, unknown>): string {
+  const b64 = (o: unknown) => Buffer.from(JSON.stringify(o)).toString("base64url");
+  return `${b64({ alg: "none" })}.${b64(payload)}.`;
 }
 
 describe("createIdentity", () => {
@@ -68,6 +74,42 @@ describe("createIdentity", () => {
     const identity = createIdentity({ idp, fetch: f as never });
     await identity.agent().token({ audience: "https://api.example.com", scopes: ["user:email"] });
     await identity.agent().token({ audience: "https://api.example.com:user", scopes: ["email"] });
+    expect(f).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not leak cached tokens across principals sharing a store (cache key includes issuer + client_id)", async () => {
+    const idpA: IdpProvider = {
+      async resolve() {
+        return { tokenEndpoint: "https://a/token", clientId: "A", clientSecret: "s", supportsTokenExchange: true };
+      },
+    };
+    const idpB: IdpProvider = {
+      async resolve() {
+        return { tokenEndpoint: "https://b/token", clientId: "B", clientSecret: "s", supportsTokenExchange: true };
+      },
+    };
+    const fetchA = vi.fn(async () => new Response(JSON.stringify({ access_token: "A_TOK", expires_in: 300 }), { status: 200 }));
+    const fetchB = vi.fn(async () => new Response(JSON.stringify({ access_token: "B_TOK", expires_in: 300 }), { status: 200 }));
+    const store = memoryStore();
+    const idA = createIdentity({ idp: idpA, store, fetch: fetchA as never });
+    const idB = createIdentity({ idp: idpB, store, fetch: fetchB as never });
+
+    const a = await idA.agent().token({ audience: "x" });
+    const b = await idB.agent().token({ audience: "x" });
+
+    expect(a.raw).toBe("A_TOK");
+    expect(b.raw).toBe("B_TOK");
+    expect(fetchA).toHaveBeenCalledTimes(1);
+    expect(fetchB).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not serve an already-expired cached token", async () => {
+    const f = vi.fn(async () => new Response(JSON.stringify({ access_token: jwt({ exp: 1 }), expires_in: 3600 }), { status: 200 }));
+    const identity = createIdentity({ idp, fetch: f as never });
+
+    await identity.agent().token();
+    await identity.agent().token();
+
     expect(f).toHaveBeenCalledTimes(2);
   });
 });
