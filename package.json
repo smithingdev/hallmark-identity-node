@@ -19,6 +19,7 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.config.integration.ts",
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
