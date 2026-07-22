@@ -1,9 +1,10 @@
 {
-  "name": "hallmark",
+  "name": "hallmark-identity",
   "version": "0.0.0",
   "description": "Open, IDP-agnostic agent-identity toolkit: agent + on-behalf-of tokens via RFC 8693.",
   "type": "module",
   "license": "MIT",
+  "author": "smithingdev",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

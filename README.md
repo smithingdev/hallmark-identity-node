@@ -35,7 +35,7 @@ The **TypeScript v1 core is complete and tested** (agent identity + on-behalf-of
 ## Install
 
 ```bash
-pnpm add hallmark   # (npm publish pending — see Status)
+pnpm add hallmark-identity   # (npm publish pending — see Status)
 ```
 
 Requires **Node ≥ 20** (native `fetch` + `node:crypto`). ESM and CommonJS builds are both shipped.
@@ -43,7 +43,7 @@ Requires **Node ≥ 20** (native `fetch` + `node:crypto`). ESM and CommonJS buil
 ## Quick start
 
 ```ts
-import { createIdentity, oidc } from "hallmark";
+import { createIdentity, oidc } from "hallmark-identity";
 
 const identity = createIdentity({
   idp: oidc({ issuer: "https://your-idp/", clientId: "agent", clientSecret: "…" }),
@@ -80,7 +80,7 @@ Under the hood, on every `.token()` call Hallmark:
 Hallmark works with **any RFC 8693-capable OIDC provider** through the generic `oidc()` adapter, plus a first-class `keycloak()` convenience adapter:
 
 ```ts
-import { oidc, keycloak } from "hallmark";
+import { oidc, keycloak } from "hallmark-identity";
 
 oidc({ issuer: "https://login.microsoftonline.com/<tenant>/v2.0", clientId, clientSecret });
 keycloak({ baseUrl: "https://kc.example", realm: "agents", clientId, clientSecret });
@@ -119,7 +119,7 @@ A returned `Token` exposes `{ raw, sub, act?, aud?, scope?, exp? }` — `raw` is
 The token store is a two-method interface, so a shared cache (Redis, etc.) is a drop-in:
 
 ```ts
-import { createIdentity, type TokenStore } from "hallmark";
+import { createIdentity, type TokenStore } from "hallmark-identity";
 
 const redisStore: TokenStore = {
   async get(key) { /* … */ },
