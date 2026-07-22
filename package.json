@@ -5,6 +5,14 @@
   "type": "module",
   "license": "MIT",
   "author": "smithingdev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smithingdev/hallmark-identity.git"
+  },
+  "homepage": "https://github.com/smithingdev/hallmark-identity",
+  "bugs": {
+    "url": "https://github.com/smithingdev/hallmark-identity/issues"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
