@@ -7,11 +7,11 @@
   "author": "smithingdev",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smithingdev/hallmark-identity.git"
+    "url": "git+https://github.com/smithingdev/hallmark-identity-node.git"
   },
-  "homepage": "https://github.com/smithingdev/hallmark-identity",
+  "homepage": "https://github.com/smithingdev/hallmark-identity-node",
   "bugs": {
-    "url": "https://github.com/smithingdev/hallmark-identity/issues"
+    "url": "https://github.com/smithingdev/hallmark-identity-node/issues"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
