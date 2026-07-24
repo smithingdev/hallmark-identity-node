@@ -30,7 +30,7 @@ The commercial answer (Auth0 Token Vault, Okta) works — but only if *their* pl
 
 ## Status
 
-The **TypeScript v1 core is complete and tested** (agent identity + on-behalf-of exchange, generic OIDC and Keycloak adapters, caching, single-flight). A **Python port** is now available at full parity — see [hallmark-identity-python](https://github.com/smithingdev/hallmark-identity-python). The **npm and PyPI releases** are on the [roadmap](#roadmap). Until then, install from source.
+The **TypeScript v1 core is complete and tested** (agent identity + on-behalf-of exchange, generic OIDC and Keycloak adapters, caching, single-flight). A **Python port** is now available at full parity, [published on PyPI](https://pypi.org/project/hallmark-identity/) as `hallmark-identity` — see [hallmark-identity-python](https://github.com/smithingdev/hallmark-identity-python). The **npm release** is on the [roadmap](#roadmap). Until then, install this TypeScript package from source.
 
 ## Install
 
@@ -147,7 +147,7 @@ Cache keys are scoped by principal and issuer, so one shared store is safe acros
 ## Roadmap
 
 - [ ] Publish to npm
-- [x] Python port, at [hallmark-identity-python](https://github.com/smithingdev/hallmark-identity-python) (publish to PyPI still pending)
+- [x] Python port, at [hallmark-identity-python](https://github.com/smithingdev/hallmark-identity-python), [published on PyPI](https://pypi.org/project/hallmark-identity/)
 - [ ] Dedicated Entra / Okta / Cognito / Auth0 adapters
 - [ ] Persistent store adapters (Redis, …)
 - [ ] Adapters for popular agent frameworks
